@@ -8,19 +8,13 @@
 
 ```bash
 npm i
-npm i -g yo
+# or yarn
 ```
 
-#### npm link
+#### npm run
 
 ```bash
-npm link
-```
-
-#### run 
-
-```bash
-yo globalsearch-docker-compose-generator
+npm run start
 ```
 
 ### docker 
@@ -28,12 +22,12 @@ yo globalsearch-docker-compose-generator
 #### build
 
 ```bash
-docker buid -f install/Dockerfile -t gs-docker-compose-generator .
+docker buid -f install/Dockerfile -t globalsearch-cli .
 ```
 
 #### run
 
 ```bash
-docker run -it --rm gs-docker-compose-generator
+docker run -it --rm globalsearch-cli
 ```
 

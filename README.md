@@ -1,6 +1,6 @@
 # globalsearch cli
 
-![example](screenshot.png "example")
+![example](example.png "example")
 
 ### setup development 
 

@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as inquirer from 'inquirer';
 import * as yosay from 'yosay';
 const colors = require('colors/safe');
+const generator = require('generate-password');
+
 import {AbstractGenerator} from './abstract-generator';
 
 export class DockerComposeGenerator extends AbstractGenerator {
@@ -221,8 +223,8 @@ export class DockerComposeGenerator extends AbstractGenerator {
             composeFolder = path.resolve('./docker-compose');
             outFolder = path.resolve('./out');
         }
-        let serviceEnv = fs.readFileSync(path.resolve(composeFolder + '/.env')).toString();
-        const serviceYaml = fs.readFileSync(path.resolve(composeFolder + '/docker-compose.yaml')).toString();
+        let env = fs.readFileSync(path.resolve(composeFolder + '/.env')).toString();
+        const yaml = fs.readFileSync(path.resolve(composeFolder + '/docker-compose.yaml')).toString();
 
         if (!fs.existsSync(outFolder)) {
             fs.mkdirSync(outFolder);
@@ -234,14 +236,24 @@ export class DockerComposeGenerator extends AbstractGenerator {
         if (fs.existsSync(outFolder + '/docker-compose.yaml')) {
             fs.unlinkSync(outFolder + '/docker-compose.yaml');
         }
-
-        fs.appendFileSync(outFolder + '/docker-compose.yaml', serviceYaml);
-        fs.appendFileSync(outFolder + '/.env', serviceEnv);
+        fs.appendFileSync(outFolder + '/docker-compose.yaml', yaml);
+        
+        env = DockerComposeGenerator.generatePasswords(env);
+        fs.appendFileSync(outFolder + '/.env', env);
         fs.appendFileSync( outFolder + '/.env', `#### GENERATED ENV ####\n`);
         this.env.forEach(env => {
             fs.appendFileSync( outFolder + '/.env', `${env}=${this.answers[env]}\n`);
         });
 
         console.log('docker-compose файлы были успешно сгенерированы в $PWD папку');
+    }
+
+    private static generatePasswords(text: string): string {
+        const mysql = '##MYSQL_ROOT_PASSWORD##';
+        const password = generator.generate({
+            length: 10,
+            numbers: true
+        });
+        return text.replace(new RegExp(mysql, 'g'), password);
     }
 }

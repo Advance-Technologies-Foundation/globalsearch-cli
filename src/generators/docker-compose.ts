@@ -5,11 +5,11 @@ import {AbstractGenerator} from './abstract-generator';
 
 export class DockerComposeGenerator extends AbstractGenerator {
 
-    private readonly needReplaceEnvList: string[];
+    private readonly env: string[];
 
     constructor() {
         super();
-        this.needReplaceEnvList = [
+        this.env = [
             "DOCKER_TAG",
             "GS_COMMON_DB_TYPE",
             "GS_COMMON_DB_DIALECT_PROVIDER",
@@ -31,11 +31,10 @@ export class DockerComposeGenerator extends AbstractGenerator {
         await this.workerDbTypeQuestions();
         await this.setCommonDbType();
 
-        console.log(colors.green("Установленные переменные окружения:"));
-        this.needReplaceEnvList.forEach(env =>
+        console.log(colors.green("Добавьте к конец .env файла следующие строки:"));
+        this.env.forEach(env =>
             console.log(`${env}=${this.answers[env]}`)
         );
-
         return undefined;
     }
 

@@ -63,7 +63,11 @@ export class DockerComposeGenerator extends AbstractGenerator {
                     validate: value => /^https?:\/\/.+$/.test(value)
                 }
             ]);
-        this.setAnswers(answers);
+
+        this.setAnswers({
+            ...answers,
+            GS_PUBLIC_ES_URL: answers.GS_ES_URL,
+        });
     }
     private async commonQuestions(): Promise<void> {
         let answers = await inquirer
@@ -78,7 +82,6 @@ export class DockerComposeGenerator extends AbstractGenerator {
             ]);
         this.setAnswers({
             ...answers,
-            GS_PUBLIC_ES_URL: answers.GS_ES_URL,
         });
     }
     private async workerDbTypeQuestions(): Promise<void> {
@@ -221,15 +224,23 @@ export class DockerComposeGenerator extends AbstractGenerator {
         let serviceEnv = fs.readFileSync(path.resolve(composeFolder + '/.env')).toString();
         const serviceYaml = fs.readFileSync(path.resolve(composeFolder + '/docker-compose.yaml')).toString();
 
-        this.env.forEach(env => {
-            serviceEnv = serviceEnv.replace(new RegExp(`^${env}=.+$`, 'gi'), `${env}=${this.answers[env]}`);
-        });
+        if (!fs.existsSync(outFolder)) {
+            fs.mkdirSync(outFolder);
+        }
 
-        fs.unlinkSync(outFolder + '/.env');
-        fs.unlinkSync(outFolder + '/docker-compose.yaml');
+        if (fs.existsSync(outFolder + '/.env')) {
+            fs.unlinkSync(outFolder + '/.env');
+        }
+        if (fs.existsSync(outFolder + '/docker-compose.yaml')) {
+            fs.unlinkSync(outFolder + '/docker-compose.yaml');
+        }
 
-        fs.appendFileSync(outFolder + '/.env', serviceEnv);
         fs.appendFileSync(outFolder + '/docker-compose.yaml', serviceYaml);
+        fs.appendFileSync(outFolder + '/.env', serviceEnv);
+        fs.appendFileSync( outFolder + '/.env', `#### GENERATED ENV ####\n`);
+        this.env.forEach(env => {
+            fs.appendFileSync( outFolder + '/.env', `${env}=${this.answers[env]}\n`);
+        });
 
         console.log('docker-compose файлы были успешно сгенерированы в $PWD папку');
     }

@@ -1,0 +1,256 @@
+version: '3'
+networks:
+  gs-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+volumes:
+  rabbitmq:
+    driver: local
+  redis:
+    driver: local
+  mysql:
+    driver: local
+services:
+
+  # mysql
+  mysql:
+    container_name: gs-mysql
+    image: "mysql:5.6"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_HOST=%
+    ports:
+      - "3306:3306"
+    volumes:
+      - "mysql:/var/lib/mysql"
+    networks:
+      - gs-network
+
+  # rabbitmq
+  rabbitmq:
+    container_name: gs-rabbitmq
+    image: "rabbitmq:3.6.9-management"
+    environment:
+      - RABBITMQ_ERLANG_COOKIE=SWQOKODSQALRPCLNMEQG
+      - RABBITMQ_DEFAULT_USER=gs
+      - RABBITMQ_DEFAULT_PASS=gs
+      - RABBITMQ_DEFAULT_VHOST=/
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - "rabbitmq:/var/lib/rabbitmq"
+    networks:
+      - gs-network
+
+  # redis
+  redis:
+    container_name: gs-redis
+    image: 'bitnami/redis:5.0'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - "redis:/bitnami/redis/data"
+    networks:
+      - gs-network
+
+  # web api service
+  web-api:
+    container_name: gs-web-api
+    image: bpmonline/gs-web-api:${DOCKER_TAG}
+    environment:
+      - DbType=${GS_COMMON_DB_TYPE}
+      - DbDialectProvider=${GS_COMMON_DB_DIALECT_PROVIDER}
+      - ApiKey=${GS_API_KEY}
+      - RequestTimeOut=${GS_REQUEST_TIMEOUT}
+      - elasticLogin=${GS_ES_LOGIN}
+      - elasticPassword=${GS_ES_PASSWORD}
+      - elasticSearchUrl=${GS_ES_URL}
+      - publicElasticSearchUrl=${GS_PUBLIC_ES_URL}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - connectionStrings__redis=${GS_REDIS_CONNECTION_STRING}
+      - RabbitMQSettings__DataCenterName=${GS_DATACENTER_NAME}
+      - RabbitMQSettings__AppVersion=${APP_VERSION}
+      - log4net.Config="log4net.production.config"
+    ports:
+      - "${WEB_API_PORT}:80"
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+    #entrypoint: printenv
+
+  # web indexing service
+  web-indexing-service:
+    container_name: gs-web-indexing-service
+    image: bpmonline/gs-web-indexing-service:${DOCKER_TAG}
+    environment:
+      - RabbitConfiguration__RabbitMQUri=${GS_RABBITMQ_AMQP}
+      - RabbitConfiguration__ConnectAttempts=${RABBITMQ_CONNECT_ATTEMPTS}
+      - RabbitConfiguration__ReconnectInterval=${RABBITMQ_RECONNECT_INTERVAL}
+      - RabbitConfiguration__NetworkRecoveryInterval=${RABBITMQ_NETWORK_RECOVERY_INTERVAL}
+      - IndexEntityPublisherConfiguration__QueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_TASK}
+      - QueriedIndexEntityPublisherConfiguration__QueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_QUERIED_TASK_INBOX}
+    ports:
+      - "${WEB_INDEXING_SERVICE_PORT}:80"
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+    #entrypoint: curl gs-rabbitmq
+
+  # scheduler
+  scheduler:
+    container_name: gs-scheduler
+    image: bpmonline/gs-scheduler:${DOCKER_TAG}
+    environment:
+      - DbType=${GS_COMMON_DB_TYPE}
+      - DbDialectProvider=${GS_COMMON_DB_DIALECT_PROVIDER}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_INBOX}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_OUTBOX}
+      - RabbitMQSettings__FillQueueInterval=${GS_DB_FILL_QUEUE_INTERVAL}
+      - RabbitMQSettings__DataCenterName=${GS_DATACENTER_NAME}
+      - RabbitMQSettings__DBServerNameTemplate=${GS_DB_SERVER_NAME_TEMPLATE}
+      - RabbitMQSettings__AppVersion=${APP_VERSION}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker
+  worker:
+    container_name: gs-worker-01
+    image: bpmonline/gs-worker:${DOCKER_TAG}
+    environment:
+      - DbDialectProvider=${GS_WORKER_DB_DIALECT_PROVIDER}
+      - DBConnectionConfigPattern=${GS_WORKER_DB_CONNECTION_STRING_PATTERN}
+      - elasticLogin=${GS_ES_LOGIN}
+      - elasticPassword=${GS_ES_PASSWORD}
+      - RequestTimeOut=${GS_REQUEST_TIMEOUT}
+      - OnSiteClientSettings__ElasticSearchUrl=${GS_ES_URL}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_INBOX}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_OUTBOX}
+      - RabbitMQSettings__IncrementDays=${GS_DB_INCREMENT_DAYS}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker-queried-single-task
+  worker-queried-single-task:
+    container_name: gs-worker-queried-single-task
+    image: bpmonline/gs-worker-queried-single-task:${DOCKER_TAG}
+    environment:
+      - DbDialectProvider=${GS_WORKER_DB_DIALECT_PROVIDER}
+      - elasticLogin=${GS_ES_LOGIN}
+      - elasticPassword=${GS_ES_PASSWORD}
+      - OnSiteClientSettings__ElasticSearchUrl=${GS_ES_URL}
+      - RabbitConfiguration__RabbitMQUri=${GS_RABBITMQ_AMQP}
+      - RabbitConfiguration__ConnectAttempts=${RABBITMQ_CONNECT_ATTEMPTS}
+      - RabbitConfiguration__ReconnectInterval=${RABBITMQ_RECONNECT_INTERVAL}
+      - RabbitConfiguration__NetworkRecoveryInterval=${RABBITMQ_NETWORK_RECOVERY_INTERVAL}
+      - IndexEntityPublisherConfiguration__QueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_TASK}
+      - RabbitConsumerConfiguration__QueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_QUERIED_TASK_INBOX}
+      - ElasticScrollConfiguration__ScrollBatchSize=${ES_SCROLL_BATCH_SIZE}
+      - ElasticScrollConfiguration__ScrollTimeout=${ES_SCROLL_TIMEOUT}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker-replay
+  worker-replay:
+    container_name: gs-worker-replay
+    image: bpmonline/gs-worker-replay:${DOCKER_TAG}
+    environment:
+      - DbDialectProvider=${GS_COMMON_DB_DIALECT_PROVIDER}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_INBOX}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_OUTBOX}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker-single
+  worker-single:
+    container_name: gs-worker-single
+    image: bpmonline/gs-worker-single:${DOCKER_TAG}
+    environment:
+      - DbDialectProvider=${GS_WORKER_DB_DIALECT_PROVIDER}
+      - DBConnectionConfigPattern=${GS_WORKER_DB_CONNECTION_STRING_PATTERN}
+      - elasticLogin=${GS_ES_LOGIN}
+      - elasticPassword=${GS_ES_PASSWORD}
+      - RequestTimeOut=${GS_REQUEST_TIMEOUT}
+      - OnSiteClientSettings__ElasticSearchUrl=${GS_ES_URL}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_INBOX}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_OUTBOX}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker-single-replay
+  worker-single-replay:
+    container_name: gs-worker-single-replay
+    image: bpmonline/gs-worker-single-replay:${DOCKER_TAG}
+    environment:
+      - DbDialectProvider=${GS_COMMON_DB_DIALECT_PROVIDER}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_INBOX}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_OUTBOX}
+      - RabbitMQSettings__IncrementDays=${GS_DB_INCREMENT_DAYS}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq
+
+  # worker-single-task
+  worker-single-task:
+    container_name: gs-worker-single-task
+    image: bpmonline/gs-worker-single-task:${DOCKER_TAG}
+    environment:
+      - DbType=${GS_COMMON_DB_TYPE}
+      - DbDialectProvider=${GS_COMMON_DB_DIALECT_PROVIDER}
+      - connectionStrings__db=${GS_DB_CONNECTION_STRING}
+      - connectionStrings__RabbitMQ=${GS_RABBITMQ_AMQP}
+      - connectionStrings__redis=${GS_REDIS_CONNECTION_STRING}
+      - RabbitMQSettings__RabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_TASK}
+      - RabbitMQSettings__ReplyRabbitQueueName=${GS_RABBITMQ_QUEUE_NAME_SINGLE_INBOX}
+      - RabbitMQSettings__DBServerNameTemplate=${GS_DB_SERVER_NAME_TEMPLATE}
+      - RabbitMQSettings__AppVersion=${APP_VERSION}
+    networks:
+      - gs-network
+    depends_on:
+      - redis
+      - mysql
+      - rabbitmq

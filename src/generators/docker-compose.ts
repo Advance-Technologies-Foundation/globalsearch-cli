@@ -1,3 +1,5 @@
+import * as path from 'path';
+import * as fs from 'fs';
 import * as inquirer from 'inquirer';
 import * as yosay from 'yosay';
 const colors = require('colors/safe');
@@ -6,6 +8,7 @@ import {AbstractGenerator} from './abstract-generator';
 export class DockerComposeGenerator extends AbstractGenerator {
 
     private readonly env: string[];
+    private readonly isProduction = process.env.NODE_ENV === 'production';
 
     constructor() {
         super();
@@ -31,10 +34,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
         await this.workerDbTypeQuestions();
         await this.setCommonDbType();
 
-        console.log(colors.green("Добавьте к конец .env файла следующие строки:"));
-        this.env.forEach(env =>
-            console.log(`${env}=${this.answers[env]}`)
-        );
+        this.generateFiles();
         return undefined;
     }
 
@@ -208,4 +208,29 @@ export class DockerComposeGenerator extends AbstractGenerator {
         }
     }
 
+    private async generateFiles() {
+        let composeFolder;
+        let outFolder;
+        if (this.isProduction) {
+            composeFolder = path.resolve('../docker-compose');
+            outFolder = path.resolve('../out');
+        } else {
+            composeFolder = path.resolve('./docker-compose');
+            outFolder = path.resolve('./out');
+        }
+        let serviceEnv = fs.readFileSync(path.resolve(composeFolder + '/.env')).toString();
+        const serviceYaml = fs.readFileSync(path.resolve(composeFolder + '/docker-compose.yaml')).toString();
+
+        this.env.forEach(env => {
+            serviceEnv = serviceEnv.replace(new RegExp(`^${env}=.+$`, 'gi'), `${env}=${this.answers[env]}`);
+        });
+
+        fs.unlinkSync(outFolder + '/.env');
+        fs.unlinkSync(outFolder + '/docker-compose.yaml');
+
+        fs.appendFileSync(outFolder + '/.env', serviceEnv);
+        fs.appendFileSync(outFolder + '/docker-compose.yaml', serviceYaml);
+
+        console.log('docker-compose файлы были успешно сгенерированы в $PWD папку');
+    }
 }

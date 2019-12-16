@@ -22,12 +22,17 @@ npm run start
 #### build
 
 ```bash
-docker buid -f install/Dockerfile -t globalsearch-cli .
+docker build -f install/Dockerfile -t globalsearch-cli .
 ```
 
-#### run
+#### run from local
 
 ```bash
-docker run -it --rm globalsearch-cli
+docker run -v $PWD:/app/out -it --rm globalsearch-cli
 ```
 
+#### run from dockerhub
+
+```bash
+docker run -v $PWD:/app/out -it --rm bpmonlinebuild/globalsearch-cli
+```

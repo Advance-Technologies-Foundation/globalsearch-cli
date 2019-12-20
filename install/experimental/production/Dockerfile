@@ -12,10 +12,13 @@ RUN --mount=type=bind,source=package.json,target=./package.json \
 RUN --mount=type=bind,source=package.json,target=./package.json \
 	--mount=type=bind,source=tsconfig.json,target=./tsconfig.json \
 	--mount=type=bind,source=webpack.config.js,target=./webpack.config.js \
-	--mount=type=bind,source=docker-compose,target=./docker-compose \
 	--mount=type=bind,source=src,target=./src \
+	npm run build
+
+RUN --mount=type=bind,source=package.json,target=./package.json \
 	--mount=type=bind,source=tests,target=./tests \
-	npm run build && npm run test:ci
+	--mount=type=bind,source=docker-compose,target=./docker-compose \
+	npm run test:ci
 
 # production stage
 FROM node:10.15.3-stretch-slim as production

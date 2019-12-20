@@ -214,35 +214,26 @@ export class DockerComposeGenerator extends AbstractGenerator {
     }
 
     private async generateFiles() {
-        let composeFolder;
-        let outFolder;
-        if (this.isProduction) {
-            composeFolder = path.resolve('../docker-compose');
-            outFolder = path.resolve('../out');
-        } else {
-            composeFolder = path.resolve('./docker-compose');
-            outFolder = path.resolve('./out');
+        const root = path.resolve('./');
+        const compose = path.resolve(root, 'docker-compose');
+        const out = path.resolve(root, 'out');
+        let env = fs.readFileSync(path.resolve(compose , '.env')).toString();
+        const yaml = fs.readFileSync(path.resolve(compose , 'docker-compose.yaml')).toString();
+        if (!fs.existsSync(out)) {
+            fs.mkdirSync(out);
         }
-        let env = fs.readFileSync(path.resolve(composeFolder + '/.env')).toString();
-        const yaml = fs.readFileSync(path.resolve(composeFolder + '/docker-compose.yaml')).toString();
-
-        if (!fs.existsSync(outFolder)) {
-            fs.mkdirSync(outFolder);
+        if (fs.existsSync(out + '/.env')) {
+            fs.unlinkSync(out + '/.env');
         }
-
-        if (fs.existsSync(outFolder + '/.env')) {
-            fs.unlinkSync(outFolder + '/.env');
+        if (fs.existsSync(out + '/docker-compose.yaml')) {
+            fs.unlinkSync(out + '/docker-compose.yaml');
         }
-        if (fs.existsSync(outFolder + '/docker-compose.yaml')) {
-            fs.unlinkSync(outFolder + '/docker-compose.yaml');
-        }
-        fs.appendFileSync(outFolder + '/docker-compose.yaml', yaml);
-
+        fs.appendFileSync(out + '/docker-compose.yaml', yaml);
         env = DockerComposeGenerator.generatePasswords(env);
-        fs.appendFileSync(outFolder + '/.env', env);
-        fs.appendFileSync( outFolder + '/.env', `#### GENERATED ENV ####\n`);
+        fs.appendFileSync(out + '/.env', env);
+        fs.appendFileSync( out + '/.env', `#### GENERATED ENV ####\n`);
         this.env.forEach(env => {
-            fs.appendFileSync( outFolder + '/.env', `${env}=${this.answers[env]}\n`);
+            fs.appendFileSync( out + '/.env', `${env}=${this.answers[env]}\n`);
         });
 
         console.log('docker-compose файлы были успешно сгенерированы в $PWD папку');

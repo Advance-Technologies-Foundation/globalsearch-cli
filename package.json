@@ -8,7 +8,7 @@
     "watch:server": "nodemon \"./build/bundle.js\" --watch \"./build\" ",
     "watch:build": "webpack --watch",
     "build": "webpack",
-    "test": "ava tests/*.tests.js"
+    "test:ci": "ava tests/*.tests.js"
   },
   "author": "",
   "license": "ISC",

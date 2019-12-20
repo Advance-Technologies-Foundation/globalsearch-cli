@@ -3,12 +3,12 @@ import * as fs from 'fs';
 import test from 'ava';
 import run, { UP, DOWN, ENTER } from 'inquirer-test';
 
-const root = path.resolve('.');
+const root = path.resolve(__dirname, '..');
 
-const cliPath = path.resolve(root, './build/bundle.js');
-const outPath = path.resolve(root, './out');
+const cliPath = path.resolve(root, 'build/bundle.js');
+const outPath = path.resolve(root, 'out');
 
-test('press enter', async t => {
+test('generated expected services files of the docker-compose', async t => {
     const result = await run([cliPath], [
         ENTER,
         'http://es:9200',

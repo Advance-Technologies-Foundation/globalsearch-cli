@@ -20,7 +20,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
             "GS_COMMON_DB_DIALECT_PROVIDER",
             "GS_WORKER_DB_CONNECTION_STRING_PATTERN",
             "GS_ES_URL",
-            "GS_PUBLIC_ES_URL"
+            "GS_PUBLIC_ES_URL",
         ];
     }
 
@@ -237,7 +237,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
             fs.unlinkSync(outFolder + '/docker-compose.yaml');
         }
         fs.appendFileSync(outFolder + '/docker-compose.yaml', yaml);
-        
+
         env = DockerComposeGenerator.generatePasswords(env);
         fs.appendFileSync(outFolder + '/.env', env);
         fs.appendFileSync( outFolder + '/.env', `#### GENERATED ENV ####\n`);

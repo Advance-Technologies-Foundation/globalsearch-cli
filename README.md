@@ -25,6 +25,12 @@ npm run start
 docker build -f install/Dockerfile -t globalsearch-cli .
 ```
 
+##### or build experimental
+
+```bash
+DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t globalsearch-cli .
+```
+
 #### run from local
 
 ```bash

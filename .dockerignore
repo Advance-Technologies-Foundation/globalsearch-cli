@@ -2,7 +2,8 @@
 .idea
 build
 node_modules
-__tests__
+tests
 README.md
 install
 .yo-rc.json
+out

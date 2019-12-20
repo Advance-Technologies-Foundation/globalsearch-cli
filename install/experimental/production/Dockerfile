@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:experimental
 
-#build stage
+# run build && tests stage
 FROM node:10.15.3-stretch-slim as build
 WORKDIR /tmp
 ENV NODE_ENV=production

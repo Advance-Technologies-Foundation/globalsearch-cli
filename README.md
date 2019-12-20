@@ -1,6 +1,6 @@
 # globalsearch cli
 
-![example](example1.png "example")
+![example](example.gif "example")
 
 ### setup development 
 
@@ -25,7 +25,7 @@ npm run start
 docker build -f install/Dockerfile -t globalsearch-cli .
 ```
 
-##### or build experimental
+##### or build experimental (fastest)
 
 ```bash
 DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t globalsearch-cli .

@@ -15,8 +15,11 @@ RUN --mount=type=bind,source=package.json,target=./package.json \
 	--mount=type=bind,source=src,target=./src \
 	npm run build
 
+RUN ls -la
+RUN cat package.json
+
 RUN --mount=type=bind,source=package.json,target=./package.json \
-	--mount=type=bind,source=tests,target=./tests \
+    --mount=type=bind,source=tests,target=./tests \
 	--mount=type=bind,source=docker-compose,target=./docker-compose \
 	npm run test:ci
 

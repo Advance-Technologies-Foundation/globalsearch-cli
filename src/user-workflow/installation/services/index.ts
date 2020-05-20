@@ -16,6 +16,7 @@ export const run = async () => {
 	await DockerComposeApplication.runGsServices({
 		creatioUrl: creatioUrl,
 		esUrl: elasticsearchUrl,
+		dockerTagVersion: dockerTagVersion,
 	});
 	await database.run();
 }

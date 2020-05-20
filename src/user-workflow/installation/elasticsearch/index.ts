@@ -1,3 +1,5 @@
-export const run = async () => {
+import DockerCompose from "../../../lib/docker-compose";
 
+export const run = async () => {
+	await DockerCompose.runElasticsearch();
 }

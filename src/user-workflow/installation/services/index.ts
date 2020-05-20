@@ -1,4 +1,5 @@
 import * as inquirer from "inquirer";
+import * as database from './database'
 import ElasticsearchRequirements from "../../../lib/elasticsearch-requirements";
 import UrlChecker from "../../../lib/url-checker";
 
@@ -11,6 +12,7 @@ export const run = async () => {
 	await selectDockerTag();
 	await setElasticsearchUrl();
 	await setCreatioUrl();
+	await database.run();
 }
 
 const checkInstalledGs = async () => {
@@ -55,7 +57,6 @@ const setElasticsearchUrl = async () => {
 	elasticsearchUrl = answer.elasticsearchUrl;
 	await ElasticsearchRequirements.checkVersion(elasticsearchUrl);
 }
-
 
 const setCreatioUrl = async () => {
 	let answer = await inquirer

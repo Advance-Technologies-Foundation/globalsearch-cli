@@ -2,6 +2,7 @@ import * as inquirer from "inquirer";
 import * as database from './database'
 import ElasticsearchRequirements from "../../../lib/elasticsearch-requirements";
 import UrlChecker from "../../../lib/url-checker";
+import DockerComposeApplication from "../../../lib/docker-compose-application";
 
 let dockerTagVersion = '2.0.2';
 let elasticsearchUrl = '';
@@ -12,6 +13,10 @@ export const run = async () => {
 	await selectDockerTag();
 	await setElasticsearchUrl();
 	await setCreatioUrl();
+	await DockerComposeApplication.runGsServices({
+		creatioUrl: creatioUrl,
+		esUrl: elasticsearchUrl,
+	});
 	await database.run();
 }
 

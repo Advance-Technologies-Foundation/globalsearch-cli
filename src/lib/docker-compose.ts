@@ -9,7 +9,7 @@ export default abstract class DockerCompose {
 
 	public static async runGsServices(config: GsServicesConfig) {
 		await DockerCompose.fetchInstallationBinary();
-		await DockerCompose.callRunGsServices();
+		await DockerCompose.callRunGsServices(config);
 	}
 
 	public static async runElasticsearch() {
@@ -25,12 +25,20 @@ export default abstract class DockerCompose {
 		console.info('cloning installation binary files successful');
 	}
 
-	private static async callRunGsServices() {
+	private static async callRunGsServices(config: GsServicesConfig) {
 		try {
 			const absolutePath = path.resolve(binaryFolder, 'services');
 			const childProcess = require('child_process');
-			childProcess.execSync(`cd ${absolutePath} && docker-compose down`);
-			childProcess.execSync(`cd ${absolutePath} && docker-compose up -d`);
+			childProcess.execSync(`docker-compose down`, {
+				cwd: absolutePath
+			});
+			childProcess.execSync(`docker-compose up -d`, {
+				env: {
+					'DOCKER_TAG': config.dockerTagVersion,
+					'GS_ES_URL': config.esUrl,
+				},
+				cwd: absolutePath
+			});
 		} catch (e) {
 			throw e;
 		}
@@ -40,8 +48,12 @@ export default abstract class DockerCompose {
 		try {
 			const absolutePath = path.resolve(binaryFolder, 'elasticsearch');
 			const childProcess = require('child_process');
-			childProcess.execSync(`cd ${absolutePath} && docker-compose down`);
-			childProcess.execSync(`cd ${absolutePath} && docker-compose up -d`);
+			childProcess.execSync(`docker-compose down`, {
+				cwd: absolutePath
+			});
+			childProcess.execSync(`docker-compose up -d`, {
+				cwd: absolutePath
+			});
 		} catch (e) {
 			throw e;
 		}

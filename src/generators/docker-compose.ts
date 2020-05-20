@@ -47,9 +47,9 @@ export class DockerComposeGenerator extends AbstractGenerator {
                     type: "confirm",
                     name: "ES_INSTALLED",
                     message: "Вы уже установили elasticsearch (по-умолчанию Y)?",
-                    default: true
+                    default: true,
                 }
-            ]);
+            ]) as any;
         this.setAnswers(answers);
         if (!answers.ES_INSTALLED) {
             console.log(colors.red(`Невозможно продолжить установку, так как для установки неободимо развернуть elasticsearch`));
@@ -60,8 +60,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
                 {
                     type: "input",
                     name: "GS_ES_URL",
-                    message:
-                        "Введите аресс elasticsearch (например http://elasticsearch:9200)?",
+                    message: "Введите аресс elasticsearch (например http://elasticsearch:9200)?",
                     validate: value => /^https?:\/\/.+$/.test(value)
                 }
             ]);
@@ -127,7 +126,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
                     message: "Введите пароль к DB, пользователя глобального поиска (например password) ?",
                     validate: value => /.+/.test(value)
                 }
-            ]);
+            ]) as any;
         const connectionString = `Server=${answers.mssqlDbServer}; Database=${answers.mssqlDbName}; User Id=${answers.mssqlDbLogin}; Password=${answers.mssqlDbPassword}; Connection Timeout=10`
         this.answers.GS_WORKER_DB_CONNECTION_STRING_PATTERN = connectionString;
     }
@@ -158,7 +157,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
                     message: "Введите пароль к DB, пользователя глобального поиска (например password) ?",
                     validate: value => /.+/.test(value)
                 }
-            ]);
+            ]) as any;
         const connectionString = `User ID=${answers.USER};Password=${answers.PASSWORD};Server=${answers.SERVER};Port=5432;Database=${answers.DB_NAME};Pooling=true;MinPoolSize=0;MaxPoolSize=200`;
         this.answers.GS_WORKER_DB_CONNECTION_STRING_PATTERN = connectionString;
     }
@@ -189,7 +188,7 @@ export class DockerComposeGenerator extends AbstractGenerator {
                     message: "Введите пароль к DB, пользователя глобального поиска (например password) ?",
                     validate: value => /.+/.test(value)
                 }
-            ]);
+            ]) as any;
         const connectionString = `Data Source=(DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = ${answers.HOST_NAME})(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = ${answers.SERVICE_NAME}) (SERVER = DEDICATED)));User Id=${answers.USER};Password=${answers.PASSWORD}`;
         this.answers.GS_WORKER_DB_CONNECTION_STRING_PATTERN = connectionString;
     }

@@ -1,8 +1,7 @@
-var path = require('path');
-
+const path = require('path');
 module.exports = {
     entry: './src/index.ts',
-    target: "node",
+    target: 'node',
     devtool: 'inline-source-map',
     output: {
         path: path.resolve(__dirname, 'build'),
@@ -15,8 +14,18 @@ module.exports = {
         rules: [
             {
                 use: 'ts-loader',
-                test: /\.ts?$/
-            }
+                test: [/\.ts?$/]
+            },
+            {
+                test: /\.js?$/,
+                include: path.resolve(__dirname, 'node_modules/inquirer'),
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                    },
+                },
+            },
         ]
     },
 }

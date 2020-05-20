@@ -42,3 +42,6 @@ docker run -v $PWD:/app/out -it --rm globalsearch-cli
 ```bash
 docker run -v $PWD:/app/out -it --rm bpmonlinebuild/globalsearch-cli
 ```
+### User workflow docs
+
+https://docs.google.com/spreadsheets/d/1CcB6Pi-lXCl7-zPmwBc-UgXw_1u7_HFS_dMCfr6tlNU/edit#gid=0

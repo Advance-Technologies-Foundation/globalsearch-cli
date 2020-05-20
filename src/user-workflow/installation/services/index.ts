@@ -1,13 +1,16 @@
 import * as inquirer from "inquirer";
 import ElasticsearchRequirements from "../../../lib/elasticsearch-requirements";
+import UrlChecker from "../../../lib/url-checker";
 
 let dockerTagVersion = '2.0.2';
 let elasticsearchUrl = '';
+let creatioUrl = '';
 
 export const run = async () => {
 	await checkInstalledGs();
 	await selectDockerTag();
 	await setElasticsearchUrl();
+	await setCreatioUrl();
 }
 
 const checkInstalledGs = async () => {
@@ -39,7 +42,6 @@ const selectDockerTag = async () => {
 	dockerTagVersion = answer.dockerTagVersion;
 }
 
-
 const setElasticsearchUrl = async () => {
 	let answer = await inquirer
 		.prompt([
@@ -52,4 +54,19 @@ const setElasticsearchUrl = async () => {
 		]) as any;
 	elasticsearchUrl = answer.elasticsearchUrl;
 	await ElasticsearchRequirements.checkVersion(elasticsearchUrl);
+}
+
+
+const setCreatioUrl = async () => {
+	let answer = await inquirer
+		.prompt([
+			{
+				type: "input",
+				name: "creatioUrl",
+				message: "Specify http or https creatio path, example https://192.168.10.20",
+				validate: value => /^https?:\/\/.+$/.test(value),
+			}
+		]) as any;
+	creatioUrl = answer.creatioUrl;
+	await UrlChecker.checkUrl(creatioUrl);
 }

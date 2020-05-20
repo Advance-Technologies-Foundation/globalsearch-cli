@@ -8,21 +8,21 @@ const githubBinaryUrl = 'https://github.com/Advance-Technologies-Foundation/gs-d
 export default abstract class DockerCompose {
 
 	public static async runGsServices(config: GsServicesConfig) {
-		console.info('please wait: cloning docker-compose binary repository...');
 		await DockerCompose.fetchInstallationBinary();
 		await DockerCompose.callRunGsServices();
 	}
 
 	public static async runElasticsearch() {
-		console.info('please wait: cloning docker-compose binary repository...');
 		await DockerCompose.fetchInstallationBinary();
 		await DockerCompose.callRunElasticsearch();
 	}
 
 	private static async fetchInstallationBinary() {
-		return new Promise(resolve => {
+		await new Promise(resolve => {
+			console.info('please wait: cloning installation binary files...');
 			clone(githubBinaryUrl, binaryFolder, {}, resolve);
 		});
+		console.info('cloning installation binary files successful');
 	}
 
 	private static async callRunGsServices() {

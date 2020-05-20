@@ -7,3 +7,4 @@ install
 .yo-rc.json
 out
 .git
+binary

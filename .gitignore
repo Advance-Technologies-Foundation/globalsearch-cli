@@ -4,3 +4,4 @@ build/
 .idea
 yarn.lock
 out
+binary

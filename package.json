@@ -14,9 +14,11 @@
   "license": "ISC",
   "dependencies": {
     "@babel/preset-env": "^7.9.6",
+    "@types/axios": "^0.14.0",
     "@types/inquirer": "^6.5.0",
     "@types/node": "^12.12.41",
     "ava": "^2.4.0",
+    "axios": "^0.19.2",
     "babel-loader": "^8.1.0",
     "colors": "^1.4.0",
     "generate-password": "^1.5.1",

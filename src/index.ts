@@ -5,7 +5,7 @@ import * as healthCheckGs from './user-workflow/health-check';
 
 (async () => {
     try {
-        const message = yosay(`Greetings, I’m a global search tuning assistant! Follow the instructions!`);
+        const message = yosay(`Hello, I’m a global search helper assistant! Follow the instructions!`);
         console.log(message);
         const setup = "Setup global search for creatio";
         const check = "Check global search settings";

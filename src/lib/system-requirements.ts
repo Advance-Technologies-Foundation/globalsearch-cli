@@ -1,4 +1,5 @@
 export default abstract class SystemRequirements {
+
 	public static check() {
 		SystemRequirements._checkDocker();
 		SystemRequirements._checkDockerCompose();

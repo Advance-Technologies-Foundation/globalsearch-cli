@@ -2,6 +2,14 @@
 
 ![example](demo1.gif "example")
 
+## Description 
+
+This tool help you setup global search in [creatio](https://creatio.com) application.  
+It is has GUI for interactive setup step by step.
+Besides it has methods for debug setup process.
+
+## For developers
+
 ### setup development 
 
 #### npm install

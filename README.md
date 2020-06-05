@@ -10,7 +10,7 @@ Besides it has methods for debug setup process.
 
 ## For developers
 
-### setup development 
+### Setup development 
 
 #### npm install
 
@@ -25,7 +25,7 @@ npm i
 npm run start
 ```
 
-### docker 
+### Docker 
 
 #### build
 

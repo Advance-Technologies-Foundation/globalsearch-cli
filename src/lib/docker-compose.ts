@@ -27,11 +27,14 @@ export default abstract class DockerCompose {
 
 	private static async callRunGsServices(config: GsServicesConfig) {
 		try {
+			console.info('removing previous docker-compose containers if presents...');
 			const absolutePath = path.resolve(binaryFolder, 'services');
 			const childProcess = require('child_process');
 			childProcess.execSync(`docker-compose down`, {
 				cwd: absolutePath
 			});
+			console.info('removing previous docker-compose containers successful');
+			console.info('running new docker-compose containers, please wait...');
 			childProcess.execSync(`docker-compose up -d`, {
 				env: {
 					'DOCKER_TAG': config.dockerTagVersion,
@@ -39,6 +42,7 @@ export default abstract class DockerCompose {
 				},
 				cwd: absolutePath
 			});
+			console.info('running new docker-compose containers successful');
 		} catch (e) {
 			throw e;
 		}

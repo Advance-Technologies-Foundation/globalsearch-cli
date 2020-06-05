@@ -29,3 +29,5 @@
             * no
     * Get a link to detailed installation documentation
 * Check global search settings (need run on "second" server with globalsearch services)
+* Supporting
+    * Make logs of the docker containers

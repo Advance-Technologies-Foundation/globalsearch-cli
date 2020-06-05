@@ -42,13 +42,13 @@ DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t 
 #### run from local
 
 ```bash
-docker run -v $PWD:/app/out -it --rm globalsearch-cli
+docker run -v /tmp/gs-out:/app/out -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -it --rm globalsearch-cli
 ```
 
 #### run from dockerhub
 
 ```bash
-docker run -v $PWD:/app/out -it --rm bpmonlinebuild/globalsearch-cli
+docker run -v /tmp/gs-out:/app/out -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -it --rm bpmonlinebuild/globalsearch-cli
 ```
 ### User workflow docs
 

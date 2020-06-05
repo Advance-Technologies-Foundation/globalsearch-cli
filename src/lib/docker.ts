@@ -3,7 +3,7 @@ export default abstract class Docker {
 	private static async _getContainers(): Promise<string[]> {
 		const command = `docker ps --filter "label=service=gs" -a --format "table {{.Names}}"`;
 		const childProcess = require('child_process');
-		childProcess.execSync(`docker ps --filter "label=service=gs" -a --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}" >& gs-CONTAINERS.log`);
+		childProcess.execSync(`docker ps --filter "label=service=gs" -a --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}" >> out/gs-CONTAINERS.log`);
 		const out = childProcess.execSync(command);
 		return out.toString()
 			.split("\n")
@@ -13,19 +13,19 @@ export default abstract class Docker {
 
 	private static async _saveLogs(containers: string[]): Promise<string[]> {
 		containers.forEach(container => {
-			const command = `docker logs ${container} >& ${container}.log`;
+			const command = `docker logs ${container} > out/${container}.log`;
 			const childProcess = require('child_process');
 			childProcess.execSync(command);
 		});
-		return containers.map(container => `${container}.log`);
+		return containers.map(container => `out/${container}.log`);
 	}
 
 	private static async _zipFiles(): Promise<string> {
 		const zipFileName = `${new Date().getTime()}_containers.logs.zip`
-		const command = `zip ${zipFileName} *.log`;
+		const command = `zip out/${zipFileName} out/*.log`;
 		const childProcess = require('child_process');
 		childProcess.execSync(command);
-		childProcess.execSync(`rm -rf gs-*.log`);
+		childProcess.execSync(`rm -rf out/gs-*.log`);
 		return zipFileName;
 	}
 

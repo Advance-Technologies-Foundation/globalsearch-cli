@@ -72,4 +72,3 @@ docker run -it --rm \
 * [En](docs/workflow.md)
 * [Ru google](https://docs.google.com/spreadsheets/d/1CcB6Pi-lXCl7-zPmwBc-UgXw_1u7_HFS_dMCfr6tlNU/edit#gid=0)
 
-### Other 

@@ -22,7 +22,11 @@ npm i
 #### npm run
 
 ```bash
-npm run start
+npm run build
+```
+
+```bash
+node build/bundle.js
 ```
 
 ### Docker 
@@ -42,15 +46,30 @@ DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t 
 #### run from local
 
 ```bash
-docker run -v /tmp/gs-out:/app/out -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -it --rm globalsearch-cli
+docker run -it --rm \
+    -v /tmp/gs-out:/app/out \
+    -v $(which docker):/usr/bin/docker \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    globalsearch-cli
 ```
 
 #### run from dockerhub
 
 ```bash
-docker run -v /tmp/gs-out:/app/out -v $(which docker):/usr/bin/docker -v /var/run/docker.sock:/var/run/docker.sock -it --rm bpmonlinebuild/globalsearch-cli
+docker run -it --rm \
+    -v /tmp/gs-out:/app/out \
+    -v $(which docker):/usr/bin/docker \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    bpmonlinebuild/globalsearch-cli
 ```
+
+#### Create .gif
+
+[OS X Screencast to animated GIF](https://gist.github.com/dergachev/4627207)
+
 ### User workflow docs
 
 * [En](docs/workflow.md)
 * [Ru google](https://docs.google.com/spreadsheets/d/1CcB6Pi-lXCl7-zPmwBc-UgXw_1u7_HFS_dMCfr6tlNU/edit#gid=0)
+
+### Other 

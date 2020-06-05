@@ -3,6 +3,7 @@ export default abstract class Docker {
 	private static async _getContainers(): Promise<string[]> {
 		const command = `docker ps --filter "label=service=gs" -a --format "table {{.Names}}"`;
 		const childProcess = require('child_process');
+		childProcess.execSync(`docker ps --filter "label=service=gs" -a --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}" >& gs-CONTAINERS.log`);
 		const out = childProcess.execSync(command);
 		return out.toString()
 			.split("\n")
@@ -28,9 +29,12 @@ export default abstract class Docker {
 		return zipFileName;
 	}
 
-	public static async zipLogs() {
+	/**
+	 * @return Path of the zip logs file.
+	 */
+	public static async zipLogs(): Promise<string> {
 		const containers = await Docker._getContainers();
 		await Docker._saveLogs(containers);
-		await Docker._zipFiles();
+		return await Docker._zipFiles();
 	}
 }

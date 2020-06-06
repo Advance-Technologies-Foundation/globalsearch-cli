@@ -3,7 +3,7 @@ export default abstract class Docker {
 	private static async _getContainers(): Promise<string[]> {
 		const command = `docker ps --filter "label=service=gs" -a --format "table {{.Names}}"`;
 		const childProcess = require('child_process');
-		childProcess.execSync(`docker ps --filter "label=service=gs" -a --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}" >> out/gs-CONTAINERS.log`);
+		childProcess.execSync(`docker ps --filter "label=service=gs" -a --format "table {{.Names}}\t{{.Ports}}\t{{.Status}}\t{{.RunningFor}}\t{{.Image}}" >> out/gs-CONTAINERS.log`);
 		const out = childProcess.execSync(command);
 		return out.toString()
 			.split("\n")

@@ -10,7 +10,7 @@ Besides it has methods for debug setup process.
 
 ##  Get started
 
-### Run on client server with global search services greater than or equal to 2.0.0 version
+### Run on client linux server with global search services, greater than or equal to 2.0.0 version
 
 ```
 docker run -it --rm \

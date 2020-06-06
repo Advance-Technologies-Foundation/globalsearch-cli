@@ -75,12 +75,15 @@ docker run -it --rm \
     bpmonlinebuild/globalsearch-cli:0.0.1
 ```
 
-#### Create .gif
-
-[OS X Screencast to animated GIF](https://gist.github.com/dergachev/4627207)
-
 ### User workflow docs
 
 * [En](docs/workflow.md)
 * [Ru google](https://docs.google.com/spreadsheets/d/1CcB6Pi-lXCl7-zPmwBc-UgXw_1u7_HFS_dMCfr6tlNU/edit#gid=0)
 
+### Changelog
+
+[Changelog](docs/CHANGELOG.md)
+
+#### Create .gif
+
+[OS X Screencast to animated GIF](https://gist.github.com/dergachev/4627207)

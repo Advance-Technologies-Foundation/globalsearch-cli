@@ -84,6 +84,8 @@ docker run -it --rm \
 
 [Changelog](docs/CHANGELOG.md)
 
+### Links
+
 #### Create .gif
 
 [OS X Screencast to animated GIF](https://gist.github.com/dergachev/4627207)

@@ -17,6 +17,23 @@ export default abstract class DockerCompose {
 		await DockerCompose.callRunElasticsearch();
 	}
 
+	public static async uninstallServices() {
+		await DockerCompose.fetchInstallationBinary();
+		const servicesPath = path.resolve(binaryFolder, 'services');
+		const elasticsearchPath = path.resolve(binaryFolder, 'elasticsearch');
+		const childProcess = require('child_process');
+		childProcess.execSync(`docker-compose down`, {
+			cwd: servicesPath,
+			stdio: 'inherit',
+			shell: true,
+		});
+		childProcess.execSync(`docker-compose down`, {
+			cwd: elasticsearchPath,
+			stdio: 'inherit',
+			shell: true,
+		});
+	}
+
 	private static async fetchInstallationBinary() {
 		await new Promise(resolve => {
 			console.info('please wait: cloning installation binary files...');
@@ -60,10 +77,14 @@ export default abstract class DockerCompose {
 			const absolutePath = path.resolve(binaryFolder, 'elasticsearch');
 			const childProcess = require('child_process');
 			childProcess.execSync(`docker-compose down`, {
-				cwd: absolutePath
+				cwd: absolutePath,
+				stdio: 'inherit',
+				shell: true,
 			});
 			childProcess.execSync(`docker-compose up -d`, {
-				cwd: absolutePath
+				cwd: absolutePath,
+				stdio: 'inherit',
+				shell: true,
 			});
 		} catch (e) {
 			throw e;

@@ -37,3 +37,4 @@
         * ngram_2.json
         * ngram_3.json
         * without_ngram.json
+* Uninstall global search

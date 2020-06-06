@@ -1,7 +1,7 @@
 ## 0.0.1 (2020-06-06)
 
 #### Features
-* Make debug information from docker containers
+* Make debug information from docker containers [example on youtube](https://www.youtube.com/watch?v=4ohF--JfL_o&feature=youtu.be)
     * Logs
     * Env 
     * Postgres tables (Site, SearchTemplate, IndexingEntity)

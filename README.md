@@ -8,6 +8,18 @@ This tool help you setup global search in [creatio](https://creatio.com) applica
 It is has GUI for interactive setup step by step.
 Besides it has methods for debug setup process.
 
+##  Get started
+
+### Run on client server with global search services greater than or equal to 2.0.0 version
+
+```
+docker run -it --rm \
+    -v /tmp/gs-out:/app/out \
+    -v $(which docker):/usr/bin/docker \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    bpmonlinebuild/globalsearch-cli:0.0.1
+```
+
 ## For developers
 
 ### Setup development 

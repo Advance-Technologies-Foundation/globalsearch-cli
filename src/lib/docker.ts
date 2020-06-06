@@ -20,12 +20,21 @@ export default abstract class Docker {
 		return containers.map(container => `out/${container}.log`);
 	}
 
+	private static async _saveEnv(containers: string[]): Promise<string[]> {
+		containers.forEach(container => {
+			const command = `docker exec ${container} env > out/${container}.env`;
+			const childProcess = require('child_process');
+			childProcess.execSync(command);
+		});
+		return containers.map(container => `out/${container}.env`);
+	}
+
 	private static async _zipFiles(): Promise<string> {
 		const zipFileName = `${new Date().getTime()}_containers.logs.zip`
-		const command = `zip out/${zipFileName} out/*.log`;
+		const command = `zip out/${zipFileName} out/*.log out/*.env`;
 		const childProcess = require('child_process');
 		childProcess.execSync(command);
-		childProcess.execSync(`rm -rf out/gs-*.log`);
+		childProcess.execSync(`rm -rf out/gs-*`);
 		return zipFileName;
 	}
 
@@ -35,6 +44,7 @@ export default abstract class Docker {
 	public static async zipLogs(): Promise<string> {
 		const containers = await Docker._getContainers();
 		await Docker._saveLogs(containers);
+		await Docker._saveEnv(containers);
 		return await Docker._zipFiles();
 	}
 }

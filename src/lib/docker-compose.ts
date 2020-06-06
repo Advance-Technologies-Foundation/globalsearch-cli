@@ -31,16 +31,23 @@ export default abstract class DockerCompose {
 			const absolutePath = path.resolve(binaryFolder, 'services');
 			const childProcess = require('child_process');
 			childProcess.execSync(`docker-compose down`, {
-				cwd: absolutePath
+				cwd: absolutePath,
+				stdio: 'inherit',
+				shell: true,
 			});
 			console.info('removing previous docker-compose containers successful');
 			console.info('running new docker-compose containers, please wait...');
-			childProcess.execSync(`docker-compose up -d`, {
+			const command = process.env.RUN_IN_DOCKER
+				? `/usr/bin/docker-compose up -d`
+				: `docker-compose up -d`;
+			childProcess.execSync(command, {
 				env: {
 					'DOCKER_TAG': config.dockerTagVersion,
 					'GS_ES_URL': config.esUrl,
 				},
-				cwd: absolutePath
+				cwd: absolutePath,
+				stdio: 'inherit',
+				shell: true,
 			});
 			console.info('running new docker-compose containers successful');
 		} catch (e) {

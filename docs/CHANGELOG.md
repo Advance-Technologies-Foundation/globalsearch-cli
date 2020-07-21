@@ -10,3 +10,12 @@
 #### Committers: 1
 - Sergey Tkachenko ([@Sergey Tkachenko](https://github.com/sergeytkachenko))
 
+## 0.0.2 (2020-07-21)
+
+#### Features
+* Show search template 
+    * [example on youtube](https://youtu.be/zwYiGU_bv3Y)
+
+#### Committers: 1
+- Sergey Tkachenko ([@Sergey Tkachenko](https://github.com/sergeytkachenko))
+

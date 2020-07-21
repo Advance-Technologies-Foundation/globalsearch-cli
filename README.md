@@ -76,7 +76,7 @@ docker run -it --rm \
     -v /tmp/gs-out:/app/out \
     -v $(which docker):/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    bpmonlinebuild/globalsearch-cli:0.0.1
+    bpmonlinebuild/globalsearch-cli:0.0.2
 ```
 
 ### User workflow docs

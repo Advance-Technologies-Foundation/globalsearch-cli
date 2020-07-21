@@ -10,10 +10,11 @@ Besides it has methods for debug setup process.
 
 ##  Get started
 
-**!Important** 
+### Important
+
 This utils work with gs version >= 2.0.2
 
-### Run on client linux server with global search services
+### Run on client linux server with global search services with version >= 2.0.2
 
 ```
 docker run -it --rm \

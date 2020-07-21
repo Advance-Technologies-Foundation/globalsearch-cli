@@ -1,3 +1,5 @@
+import {Site} from "./model/site";
+
 export default abstract class Docker {
 
 	private static async _getContainers(): Promise<string[]> {
@@ -97,5 +99,44 @@ export default abstract class Docker {
 		await Docker._saveEnv(containers);
 		await Docker._saveSqlQueries();
 		return await Docker._zipFiles();
+	}
+
+	public static async showSearchTemplate(siteId: number) {
+		const postgresCommand = 'docker exec gs-postgres';
+		const searchTemplateQuery = `psql -c 'SELECT "Name", "Content" FROM "SearchTemplate" WHERE "SiteId" = ${siteId};' -Upostgres;`;
+		try {
+			const childProcess = require('child_process');
+			const out = childProcess.execSync(`(${postgresCommand} ${searchTemplateQuery})`, {
+				shell: true,
+			});
+			const result = out.toString();
+			console.log(result);
+		} catch (e) {
+			console.error(e.message);
+		}
+	}
+
+	public static async getSites(): Promise<Site[]> {
+		const postgresCommand = 'docker exec gs-postgres';
+		const siteQuery = `psql -c 'SELECT "Id", "Name" FROM "Site";' -Upostgres;`;
+		try {
+			const childProcess = require('child_process');
+			const out = childProcess.execSync(`(${postgresCommand} ${siteQuery})`, {
+				shell: true,
+			});
+			const result = out.toString();
+			const rows = result.split('\n');
+			const sites = rows.slice(2, rows.length - 3);
+			return sites.map(site => {
+				const row = site.split('|').map(x => x.trim());
+				return {
+					id: parseInt(row[0]),
+					name: row[1]
+				} as Site
+			});
+		} catch (e) {
+			console.error(e.message);
+		}
+		return [];
 	}
 }

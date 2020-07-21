@@ -31,6 +31,7 @@
 * Check global search settings (need run on "second" server with globalsearch services)
 * Supporting
     * Make logs of the docker containers
+    * Show search template (default.json, 3-ngram.json, etc.)
 * Change global search template 
     * Select searching template
         * default.json

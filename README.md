@@ -59,16 +59,6 @@ docker build -f install/Dockerfile -t globalsearch-cli .
 DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t globalsearch-cli .
 ```
 
-#### run from local
-
-```bash
-docker run -it --rm \
-    -v /tmp/gs-out:/app/out \
-    -v $(which docker):/usr/bin/docker \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    globalsearch-cli
-```
-
 #### run from dockerhub
 
 ```bash
@@ -76,7 +66,8 @@ docker run -it --rm \
     -v /tmp/gs-out:/app/out \
     -v $(which docker):/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    bpmonlinebuild/globalsearch-cli:0.0.2
+    -e SERVER_IP=$(hostname -I | awk '{print $1}') \
+    bpmonlinebuild/globalsearch-cli:0.0.3
 ```
 
 ### User workflow docs

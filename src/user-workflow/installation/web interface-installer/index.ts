@@ -20,7 +20,7 @@ const helperUi = [
 ];
 
 export const run = async () => {
-	console.log(colors.yellow(`Web interface installer has been run!`));
+	console.log(colors.gray(`Please wait...!`));
 
 	safeRunShell('docker create network gs-helper');
 	safeRunShell('docker rm -f gs-helper-api');

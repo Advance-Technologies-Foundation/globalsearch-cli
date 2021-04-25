@@ -19,7 +19,6 @@ This utils work with gs version >= 2.0.2
 ```bash
 docker run -it --rm \
     -v /tmp/gs-out:/app/out \
-    -v $(which docker):/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e SERVER_IP=$(hostname -I | awk '{print $1}') \
     bpmonlinebuild/globalsearch-cli:0.0.3
@@ -59,7 +58,6 @@ docker build -f install/Dockerfile -t globalsearch-cli .
 ```bash
 docker run -it --rm \
     -v /tmp/gs-out:/app/out \
-    -v $(which docker):/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -e SERVER_IP=$(hostname -I | awk '{print $1}') \
     bpmonlinebuild/globalsearch-cli:0.0.3

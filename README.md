@@ -16,12 +16,13 @@ This utils work with gs version >= 2.0.2
 
 ### Run on client linux server with global search services with version >= 2.0.2
 
-```
+```bash
 docker run -it --rm \
     -v /tmp/gs-out:/app/out \
     -v $(which docker):/usr/bin/docker \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    bpmonlinebuild/globalsearch-cli:0.0.2
+    -e SERVER_IP=$(hostname -I | awk '{print $1}') \
+    bpmonlinebuild/globalsearch-cli:0.0.3
 ```
 
 ## For developers
@@ -51,12 +52,6 @@ node build/bundle.js
 
 ```bash
 docker build -f install/Dockerfile -t globalsearch-cli .
-```
-
-##### or build experimental (fastest)
-
-```bash
-DOCKER_BUILDKIT=1 docker build -f install/experimental/production/Dockerfile -t globalsearch-cli .
 ```
 
 #### run from dockerhub

@@ -1,44 +1,47 @@
 import * as inquirer from "inquirer";
-import {connectionCheck, DbType} from "../../../lib/database";
+import {connectionCheck, DbType, setFeatures, updateSysSettings} from "../../../lib/database";
+import {liveness} from "../../../lib/webservice";
+import {addSearch, addSite} from "../../../lib/webapi";
 
 const colors = require('colors/safe');
 
 export const run = async () => {
+	const webApiUrl = await getWebApiUrl();
+	const searchService = await getSearchServiceUrl();
+	const webIndexingService = await getWebIndexingServiceUrl();
 
 	const databaseType = await getDatabaseType();
 	const connectionString = await getDatabaseConnectionString(databaseType);
+	const siteName = await getSiteName(connectionString);
 
-	const questions = [
-		{
-			type: "input",
-			name: "webApiUrl",
-			message: "PLase provide WEB-API URL (http://localhost:81):",
-			validate: value => value.toString().trim().startsWith('http'),
-		},
-		{
-			type: "input",
-			name: "searchService",
-			message: "PLase provide SEARCH-SERVICE URL (http://localhost:82):",
-			validate: value => value.toString().trim().startsWith('http'),
-		},
-		{
-			type: "input",
-			name: "webIndexingService",
-			message: "PLase provide WEB-INDEXING-SERVICE URL (http://localhost:83):",
-			validate: value => value.toString().trim().startsWith('http'),
-		}
-	];
-	const answer = await getAnswers(questions);
+	console.log(`databaseType: ${colors.green(databaseType)}`);
+	console.log(`connectionString: ${colors.green(connectionString)}`);
+	console.log(`webApiUrl: ${colors.green(webApiUrl)}`);
+	console.log(`searchService: ${colors.green(searchService)}`);
+	console.log(`webIndexingService: ${colors.green(webIndexingService)}`);
+	console.log(`siteName: ${colors.green(siteName)}`);
 
-	const webApiUrl = answer.webApiUrl;
-	const searchService = answer.searchService;
-	const webIndexingService = answer.webIndexingService;
+	await addSite({
+		connectionString: connectionString,
+		dbType: databaseType,
+		webApiUrl: webApiUrl,
+		siteName: siteName,
+	});
+	const esIndexName = await addSearch({
+		siteName: siteName,
+		webApiUrl: webApiUrl
+	});
+	const creatioGsUrl = `${searchService}/${esIndexName}`;
 
-	console.log(colors.gray(databaseType));
-	console.log(colors.gray(connectionString));
-	console.log(colors.gray(webApiUrl));
-	console.log(colors.gray(searchService));
-	console.log(colors.gray(webIndexingService));
+	await setFeatures(connectionString, databaseType);
+	await updateSysSettings(
+		databaseType,
+		connectionString,
+		creatioGsUrl,
+		webApiUrl,
+		webIndexingService,
+	);
+	process.exit(-1);
 
 	/**
 	 1. Resolve type os database connection string
@@ -49,7 +52,6 @@ export const run = async () => {
 	 6. Set sys setting in creatio
 	 7. Run anonymus send configs from creatio
     */
-
 }
 
 async function getDatabaseType(): Promise<DbType> {
@@ -85,9 +87,81 @@ async function getDatabaseConnectionString(databaseType: DbType): Promise<any> {
 	return connectionString;
 }
 
-async function getAnswers(questions): Promise<any> {
-	const answers = await inquirer.prompt(questions);
-	console.log(answers)
-	return answers;
+async function getSiteName(connectionString: string): Promise<string> {
+	const { parseConnectionString } = require('@tediousjs/connection-string');
+	const { server, database } = parseConnectionString(connectionString);
+	const answer: any = await inquirer.prompt([
+		{
+			type: "input",
+			name: "siteName",
+			message: "PLase provide site name",
+			default: database ?? server,
+			validate: value => Boolean(value),
+		},
+	]);
+	return answer.siteName;
 }
 
+async function getWebApiUrl(): Promise<string> {
+	const answer: any = await inquirer.prompt([
+		{
+			type: "input",
+			name: "webApiUrl",
+			message: "PLase provide WEB-API URL",
+			default: 'https://gs-api-stage.bpmonline.com',
+			validate: value => value.toString().trim().startsWith('http'),
+		},
+	]);
+	const webApiUrl = normalizeUrl(answer.webApiUrl);
+	try {
+		await liveness(webApiUrl);
+	} catch (e) {
+		console.error(e);
+		return getWebApiUrl();
+	}
+	return webApiUrl;
+}
+
+async function getWebIndexingServiceUrl(): Promise<string> {
+	const answer: any = await inquirer.prompt([
+		{
+			type: "input",
+			name: "webIndexingService",
+			default: 'https://gs-index-stage.bpmonline.com',
+			message: "PLase provide WEB-INDEXING-SERVICE URL",
+			validate: value => value.toString().trim().startsWith('http'),
+		}
+	]);
+	const webIndexingService = normalizeUrl(answer.webIndexingService);
+	try {
+		await liveness(webIndexingService);
+	} catch (e) {
+		console.error(e);
+		return getWebIndexingServiceUrl();
+	}
+	return webIndexingService;
+}
+
+async function getSearchServiceUrl(): Promise<string> {
+	const answer: any = await inquirer.prompt([
+		{
+			type: "input",
+			name: "searchService",
+			message: "PLase provide SEARCH-SERVICE URL",
+			default: 'https://gs-search-stage.bpmonline.com',
+			validate: value => value.toString().trim().startsWith('http'),
+		},
+	]);
+	const searchService = normalizeUrl(answer.searchService);
+	try {
+		await liveness(searchService);
+	} catch (e) {
+		console.error(e);
+		return getSearchServiceUrl();
+	}
+	return searchService;
+}
+
+function normalizeUrl(url: string): string {
+	return url.trim().replace(/\/\/$/g, '/');
+}

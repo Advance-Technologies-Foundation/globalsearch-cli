@@ -1,1 +1,1 @@
-export * from './connection-checker';
+export * from './connection';

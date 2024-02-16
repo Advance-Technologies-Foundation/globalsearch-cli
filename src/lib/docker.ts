@@ -111,7 +111,7 @@ export default abstract class Docker {
 			});
 			const result = out.toString();
 			console.log(result);
-		} catch (e) {
+		} catch (e: any) {
 			console.error(e.message);
 		}
 	}
@@ -134,7 +134,7 @@ export default abstract class Docker {
 					name: row[1]
 				} as Site
 			});
-		} catch (e) {
+		} catch (e: any) {
 			console.error(e.message);
 		}
 		return [];

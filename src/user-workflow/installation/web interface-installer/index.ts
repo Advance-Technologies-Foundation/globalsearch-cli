@@ -1,3 +1,5 @@
+import SystemRequirements from "../../../lib/system-requirements";
+
 const colors = require('colors/safe');
 
 const helperAPI = [
@@ -20,6 +22,7 @@ const helperUi = [
 ];
 
 export const run = async () => {
+	SystemRequirements.check();
 	console.log(colors.gray(`Please wait...!`));
 
 	safeRunShell('docker create network gs-helper');

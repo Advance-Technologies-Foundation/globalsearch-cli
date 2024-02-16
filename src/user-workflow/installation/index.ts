@@ -2,10 +2,10 @@ import * as inquirer from "inquirer";
 import * as elasticsearch from './elasticsearch'
 import * as services from './services'
 import * as webInterfaceInstall from './web interface-installer'
-import SystemRequirements from "../../lib/system-requirements";
+import * as commandLineInstaller from './command-line-installer'
 
 export const run = async () => {
-	SystemRequirements.check()
+	const commandLine = "Only configure Global Search (without installation)";
 	const webInterface = "Installation using the web interface";
 	const setupEs = "Install and run elasticsearch";
 	const setupGsServices = "Install and configure Global Search services";
@@ -15,11 +15,14 @@ export const run = async () => {
 				type: "list",
 				name: "action",
 				message: "What would you like to do?",
-				choices: [webInterface/*, setupEs, setupGsServices*/],
-				default: webInterface,
+				choices: [commandLine, webInterface/*, setupEs, setupGsServices*/],
+				default: commandLine,
 			}
 		]) as any;
 	const action = answer.action;
+	if (action === commandLine) {
+		await commandLineInstaller.run();
+	}
 	if (action === webInterface) {
 		await webInterfaceInstall.run();
 	}

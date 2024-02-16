@@ -5,7 +5,7 @@ export abstract class AbstractGenerator {
         this.answers = {};
     }
 
-    abstract async run(): Promise<void>
+    abstract run(): Promise<void>
 
     protected setAnswers(answers: any) {
         this.answers = {

@@ -9,7 +9,7 @@ export default abstract class UrlChecker {
 			if (response.status >= 200 && response.status < 400) {
 				return;
 			}
-		} catch (e) {
+		} catch (e: any) {
 			throw new Error(`Check ${url} failed. ${e.message}`);
 		}
 		throw new Error(`Check url failed. ${url} return status ${response.status}`);

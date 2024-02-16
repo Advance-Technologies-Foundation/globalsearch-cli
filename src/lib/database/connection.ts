@@ -2,7 +2,7 @@ import * as mssql from 'mssql';
 import { Client } from 'pg'
 import {MSSQL_SET_FEATURES, MSSQL_SYS_SETTINGS} from "mssql";
 import {PSQL_SET_FEATURES} from "./postgres";
-import {PSQL_SYS_SETTINGS} from "./postgres/sys-settings";
+import {PSQL_SYS_SETTINGS} from "./postgres";
 
 export type DbType = 'mssql' | 'postgres' | 'oracle';
 
